@@ -23,5 +23,11 @@ pipeline {
                 echo 'All required files exist'
             }
         }
+
+        stage('Verify Docker') {
+            steps {
+                sh 'docker --version'
+            }
+        }
     }
 }
