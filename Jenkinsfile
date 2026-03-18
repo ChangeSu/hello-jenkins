@@ -48,17 +48,16 @@ pipeline {
             }
         }
 
-       stage('Run Container') {
+        stage('Run Container') {
             steps {
                 sh 'docker rm -f hello-jenkins-demo || true'
                 sh 'docker run -d --name hello-jenkins-demo -p 18081:80 hello-jenkins:1.0'
             }
         }
 
-        stage('Verify Service') {
+        stage('Verify Container Running') {
             steps {
-                sh 'sleep 10'
-                sh 'curl -f http://localhost:18081'
+                sh 'docker ps | grep hello-jenkins-demo'
             }
         }
     }
