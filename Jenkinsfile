@@ -38,7 +38,7 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                sh 'docker build -t hello-jenkins:1.0 .'
+                sh 'DOCKER_BUILDKIT=0 docker build -t hello-jenkins:1.0 .'
             }
         }
 
