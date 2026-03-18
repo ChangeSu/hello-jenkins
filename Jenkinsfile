@@ -24,9 +24,15 @@ pipeline {
             }
         }
 
-        stage('Verify Docker') {
+       stage('Verify Docker') {
             steps {
                 sh 'docker --version'
+            }
+        }
+
+        stage('Check Docker Client Server') {
+            steps {
+                sh 'docker version'
             }
         }
     }
