@@ -47,5 +47,19 @@ pipeline {
                 sh 'docker images | grep hello-jenkins'
             }
         }
+
+       stage('Run Container') {
+            steps {
+                sh 'docker rm -f hello-jenkins-demo || true'
+                sh 'docker run -d --name hello-jenkins-demo -p 18081:80 hello-jenkins:1.0'
+            }
+        }
+
+        stage('Verify Service') {
+            steps {
+                sh 'sleep 10'
+                sh 'curl -f http://localhost:18081'
+            }
+        }
     }
 }
