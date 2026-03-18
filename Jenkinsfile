@@ -35,5 +35,17 @@ pipeline {
                 sh 'docker version'
             }
         }
+
+        stage('Build Image') {
+            steps {
+                sh 'docker build -t hello-jenkins:1.0 .'
+            }
+        }
+
+        stage('List Images') {
+            steps {
+                sh 'docker images | grep hello-jenkins'
+            }
+        }
     }
 }
