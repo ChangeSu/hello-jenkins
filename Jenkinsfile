@@ -26,7 +26,7 @@ pipeline {
               sh 'test -f k8s/Jenkinsfile'
               sh 'test -f k8s/deployment.yaml'
               sh 'test -f k8s/service.yaml'
-              sh "test -f ${INGRESS_YAML_PATH}"
+              sh 'test -f ${INGRESS_YAML_PATH}'
               echo 'All required files exist'
           }
       }
