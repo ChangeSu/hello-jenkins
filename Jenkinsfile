@@ -7,6 +7,7 @@ pipeline {
         IMAGE_NAME = 'hello-jenkins'
         IMAGE_TAG = "${BUILD_NUMBER}"
         FULL_IMAGE = "${REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}"
+        INGRESS_YAML_PATH = 'k8s/ingress.yaml'
     }
 
   stages {
@@ -25,6 +26,7 @@ pipeline {
               sh 'test -f Jenkinsfile'
               sh 'test -f k8s/deployment.yaml'
               sh 'test -f k8s/service.yaml'
+              sh 'test -f ${INGRESS_YAML_PATH}'
               echo 'All required files exist'
           }
       }
@@ -74,6 +76,12 @@ pipeline {
           steps {
               sh 'kubectl apply -f k8s/deployment-rendered.yaml'
               sh 'kubectl apply -f k8s/service.yaml'
+
+              echo '校验Ingress YAML语法...'
+              sh 'kubectl apply -f ${INGRESS_YAML_PATH} -n ${NAMESPACE} --dry-run=client'
+
+              echo '部署Ingress资源...'
+              sh 'kubectl apply -f ${INGRESS_YAML_PATH} -n ${NAMESPACE}'
           }
       }
 
@@ -83,6 +91,20 @@ pipeline {
               sh 'kubectl get deployment hello-jenkins'
               sh 'kubectl get pods -l app=hello-jenkins -o wide'
               sh 'kubectl get svc hello-jenkins-service'
+
+              echo '验证Ingress部署状态...'
+
+              sh '''
+                    kubectl get ingress -n ${NAMESPACE}
+                    kubectl describe ingress hello-jenkins-ingress -n ${NAMESPACE}
+                    
+                    INGRESS_IP=$(kubectl get ingress hello-jenkins-ingress -n ${NAMESPACE} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+                    if [ -z "$INGRESS_IP" ]; then
+                        echo "警告：Ingress暂无外网IP，请检查Nginx Ingress控制器是否部署！"
+                    else
+                        echo "Ingress部署成功，访问地址：http://${INGRESS_IP} (host: hello.local)"
+                    fi
+                '''
           }
       }
   }
