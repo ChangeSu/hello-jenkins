@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+name: hello-jenkins
+spec:
+replicas: 1
+selector:
+  matchLabels:
+    app: hello-jenkins
+template:
+  metadata:
+    labels:
+      app: hello-jenkins
+  spec:
+    imagePullSecrets:
+      - name: acr-secret
+    containers:
+      - name: hello-jenkins
+        image: IMAGE_PLACEHOLDER
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 80
